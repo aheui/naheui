@@ -57,6 +57,56 @@ var strokeCountTable = [
     // 'ㅌ', 'ㅍ', 'ㅎ'
     4, 4, 3
 ];
+var operationMap = (function () {
+    function arithmetic (operator) {
+        return (function (machine, jong) {
+            var storage = machine.storage;
+            var right = storage.pop() | 0;
+            var left = storage.pop() | 0;
+            storage.push((operator(left, right)) | 0);
+            return false;
+        });
+    };
+    return {
+        'ㅇ': function (machine, jong) {
+            return false;
+        },
+        'ㅎ': function (machine, jong) {
+            return true;
+        },
+        'ㄷ': arithmetic(function (left, right) { return left + right; }),
+        'ㄸ': arithmetic(function (left, right) { return left * right; }),
+        'ㅌ': arithmetic(function (left, right) { return left - right; }),
+        'ㄴ': arithmetic(function (left, right) { return left / right; }),
+        'ㄹ': arithmetic(function (left, right) { return left % right; }),
+        'ㅁ': function (machine, jong) {
+            var output = machine.output;
+            var pop = storage.pop();
+            switch (jong) {
+            case 'ㅇ':
+                output(pop.toString());
+                break;
+            case 'ㅎ':
+                output(String.fromCharCode(pop));
+                break;
+            }
+            return false;
+        },
+        'ㅂ': function (machine, jong) {
+            var input = machine.input();
+            var push = storage.push;
+            switch (jong) {
+            case 'ㅇ':
+                push(input | 0);
+                break;
+            case 'ㅎ':
+                push(input.charCodeAt() | 0);
+                break;
+            }
+            return false;
+        }
+    };
+})();
 
 function isAheuiCode(code) {
     return /^[가-힣]$/.test(code.toString());
@@ -115,16 +165,17 @@ function codeSpace(sourceCode) {
     });
 }
 
-function Machine(terminateFunction) {
+function Machine(codeSpace) {
     var self = this;
-    var cursor;
     var storages;
-    var storage;
-    self.run; var terminateFlag = false;
-    self.terminate;
+    self.cursor;
+    self.storage;
+    self.run; var terminateFlag;
+    self.step;
+    self.input;
+    self.output;
     self.selectStorage;
     //
-    cursor = new Cursor(0, 0, 0, 1);
     storages = (function () {
         var storage;
         var storages = [];
@@ -144,15 +195,23 @@ function Machine(terminateFunction) {
         }
         return storages;
     })();
-    storage = storages[0];
-    self.run = function () {
-        // todo
+    self.cursor = new Cursor(0, 0, 0, 1);
+    self.storage = storages[0];
+    self.run = function (terminateFunction) {
+        terminateFlag = false;
+        while (!terminateFlag)
+            self.step();
+        terminateFunction();
     };
-    self.terminate = (typeof terminateFunction === 'undefined')
-                     ? function () { terminateFlag = true; }
-                     : terminateFunction;
-    self.selectStorage = function (jong) {
-        // todo
+    self.step = function () {
+        var code = self.cursor.point(codeSpace);
+        var operation = operationMap[code.cho];
+        if (typeof operation !== 'undefined')
+            terminateFlag = operation(self, code.jong);
+        self.cursor.move(code.jung);
+    };
+    self.selectStorage = function (code) {
+        self.storage = storages[jong(code)];
     };
 }
 
@@ -162,21 +221,67 @@ function Cursor(x, y, xs, ys) {
     self.y = (typeof y === 'undefined') ? 0 : y;
     self.xs = (typeof xs === 'undefined') ? 0 : xs;
     self.ys = (typeof ys === 'undefined') ? 0 : ys;
+    self.point = function (codeSpace) {
+        return codeSpace[self.y][self.x];
+    };
+    self.move = function (jung) {
+        switch (self.xs) {
+        case 'reflect':
+            self.x = -self.x;
+            break;
+        case undefined:
+            break;
+        default:
+            self.x += self.xs;
+            break;
+        }
+        switch (self.ys) {
+        case 'reflect':
+            self.y = -self.y;
+            break;
+        case undefined:
+            break;
+        default:
+            self.y += self.ys;
+            break;
+        }
+    };
 }
 
 function Storage(type) { // 'stack', 'queue'
     var self = this;
     var array = [];
     self.push = array.push;
+    self.duplicate;
+    self.swap;
     switch (type) {
     case 'stack':
         self.pop = array.pop;
+        self.duplicate = function () {
+            return array.push(array[array.length - 1]);
+        };
+        self.swap = function () {
+            // todo
+        };
         break;
     case 'queue':
         self.pop = array.shift;
+        self.duplicate = function () {
+            // todo
+        };
+        self.swap = function () {
+            // todo
+        };
         break;
     case 'pipe':
-        self.pop = array.shift; // undefined behavior
+        // undefined behavior
+        self.pop = array.shift;
+        self.duplicate = function () {
+            // todo
+        };
+        self.swap = function () {
+            // todo
+        };
         break;
     default:
         throw 'undefined stoarage type: ' + type;
