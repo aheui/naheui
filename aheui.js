@@ -4,6 +4,7 @@ var choTable = [
     'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ',
     'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
 ];
+exports.choTable = choTable;
 var jungTable = [
     'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
     'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ',
@@ -11,6 +12,7 @@ var jungTable = [
     'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
     'ㅣ'
 ];
+exports.jungTable = jungTable;
 var jongTable = [
     '', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ',
     'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ',
@@ -19,6 +21,7 @@ var jongTable = [
     'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ',
     'ㅌ', 'ㅍ', 'ㅎ'
 ];
+exports.jongTable = jongTable;
 var xSpeedTable = [
     // 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
     1, undefined, 2, undefined, -1,
@@ -31,6 +34,7 @@ var xSpeedTable = [
     // 'ㅣ'
     'reflect'
 ];
+exports.xSpeedTable = xSpeedTable;
 var ySpeedTable = [
     // 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
     0, undefined, 0, undefined, 0,
@@ -43,8 +47,9 @@ var ySpeedTable = [
     // 'ㅣ'
     0
 ];
+exports.ySpeedTable = ySpeedTable;
 var strokeCountTable = [
-    // null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ',
+    // '', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ',
     0, 2, 4, 4, 2,
     // 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ',
     5, 5, 3, 5, 7,
@@ -57,6 +62,7 @@ var strokeCountTable = [
     // 'ㅌ', 'ㅍ', 'ㅎ'
     4, 4, 3
 ];
+exports.strokeCountTable = strokeCountTable;
 var operationMap = (function () {
     function arithmetic (operator) {
         return (function (machine, jong) {
@@ -68,23 +74,27 @@ var operationMap = (function () {
         });
     };
     return {
+        // 'ㅇ' 묶음
         'ㅇ': function (machine, jong) {
             return false;
         },
         'ㅎ': function (machine, jong) {
             return true;
         },
+        // 'ㄷ' 묶음
         'ㄷ': arithmetic(function (left, right) { return left + right; }),
         'ㄸ': arithmetic(function (left, right) { return left * right; }),
         'ㅌ': arithmetic(function (left, right) { return left - right; }),
         'ㄴ': arithmetic(function (left, right) { return left / right; }),
         'ㄹ': arithmetic(function (left, right) { return left % right; }),
+        // 'ㅁ' 묶음
         'ㅁ': function (machine, jong) {
+            var storage = machine.storage;
             var output = machine.output;
             var pop = storage.pop();
-            switch (jong) {
+            switch (jongTable[jong]) {
             case 'ㅇ':
-                output(pop.toString());
+                output(pop + '');
                 break;
             case 'ㅎ':
                 output(String.fromCharCode(pop));
@@ -93,27 +103,65 @@ var operationMap = (function () {
             return false;
         },
         'ㅂ': function (machine, jong) {
-            var input = machine.input();
+            var storage = machine.storage;
+            var input = machine.input;
             var push = storage.push;
-            switch (jong) {
+            switch (jongTable[jong]) {
             case 'ㅇ':
-                push(input | 0);
+                push(input() | 0);
                 break;
             case 'ㅎ':
-                push(input.charCodeAt() | 0);
+                push(input().charCodeAt() | 0);
+                break;
+            default:
+                push(strokeCountTable[jong]);
                 break;
             }
+            return false;
+        },
+        'ㅃ': function (machine, jong) {
+            var storage = machine.storage;
+            storage.duplicate();
+            return false;
+        },
+        'ㅍ': function (machine, jong) {
+            var storage = machine.storage;
+            storage.swap();
+            return false;
+        },
+        // 'ㅅ' 묶음
+        'ㅅ': function (machine, jong) {
+            machine.selectStorage(jong);
+            return false;
+        },
+        'ㅆ': function (machine, jong) {
+            var storage = machine.storage;
+            storage.send(machine.getStorage(jong));
+            return false;
+        },
+        'ㅈ': function (machine, jong) {
+            var storage = machine.storage;
+            storage.push((storage.pop() <= storage.pop()) ? 1 : 0);
+            return false;
+        },
+        'ㅊ': function (machine, jong) {
+            var storage = machine.storage;
+            if (storage.pop() === 0)
+                machine.cursor.reflect();
             return false;
         }
     };
 })();
+exports.operationMap = operationMap;
 
 function isAheuiCode(code) {
     return /^[가-힣]$/.test(code.toString());
 }
+exports.isAheuiCode = isAheuiCode;
 function isComment(code) {
     return !isAheuiCode(code.toString());
 }
+exports.isComment = isComment;
 
 function indexExtractor(table, extractFunction) {
     function extractIndex(code) {
@@ -138,12 +186,15 @@ function indexExtractor(table, extractFunction) {
 var cho = indexExtractor(choTable, function (syllableCode) {
     return (syllableCode / 588) | 0;
 });
+exports.cho = cho;
 var jung = indexExtractor(jungTable, function (syllableCode) {
     return (((syllableCode / 28) | 0) % 21) | 0;
 });
+exports.jung = jung;
 var jong = indexExtractor(jongTable, function (syllableCode) {
     return (syllableCode % 28) | 0;
 });
+exports.jong = jong;
 
 function code(char) {
     return {
@@ -156,7 +207,7 @@ function code(char) {
         }
     }
 }
-
+exports.code = code;
 function codeSpace(sourceCode) {
     return sourceCode.split(/\n|\r\n/g).map(function (line) {
         return line.split('').map(function (char) {
@@ -164,16 +215,17 @@ function codeSpace(sourceCode) {
         });
     });
 }
+exports.codeSpace = codeSpace;
 
 function Machine(codeSpace) {
     var self = this;
-    var storages;
-    self.cursor;
-    self.storage;
+    self.cursor; var cursor;
+    self.storage; var storages;
     self.run; var terminateFlag;
     self.step;
     self.input;
     self.output;
+    self.getStorage;
     self.selectStorage;
     //
     storages = (function () {
@@ -195,95 +247,153 @@ function Machine(codeSpace) {
         }
         return storages;
     })();
-    self.cursor = new Cursor(0, 0, 0, 1);
+    self.cursor = cursor = new Cursor(0, 0, 0, 1);
     self.storage = storages[0];
     self.run = function (terminateFunction) {
         terminateFlag = false;
         while (!terminateFlag)
             self.step();
-        terminateFunction();
+        var result = self.storage.pop() | 0;
+        if (typeof terminateFunction !== 'undefined')
+            terminateFunction(result);
     };
     self.step = function () {
-        var code = self.cursor.point(codeSpace);
-        var operation = operationMap[code.cho];
-        if (typeof operation !== 'undefined')
-            terminateFlag = operation(self, code.jong);
-        self.cursor.move(code.jung);
+        var code = cursor.point(codeSpace);
+        if (typeof code !== 'undefined') {
+            var operation = operationMap[choTable[code.cho]];
+            cursor.turn(code.jung);
+            if (typeof operation !== 'undefined')
+                terminateFlag = operation(self, code.jong);
+        }
+        cursor.move(codeSpace);
+    };
+    self.input = function () {
+        return '';
+    };
+    self.output = function (value) {
+        console.log(value);
+    };
+    self.getStorage = function (code) {
+        return storages[jong(code)];
     };
     self.selectStorage = function (code) {
-        self.storage = storages[jong(code)];
+        self.storage = self.getStorage(code);
     };
 }
+exports.Machine = Machine;
 
-function Cursor(x, y, xs, ys) {
+function Cursor(x, y, xSpeed, ySpeed) {
     var self = this;
     self.x = (typeof x === 'undefined') ? 0 : x;
     self.y = (typeof y === 'undefined') ? 0 : y;
-    self.xs = (typeof xs === 'undefined') ? 0 : xs;
-    self.ys = (typeof ys === 'undefined') ? 0 : ys;
+    self.xSpeed = (typeof xSpeed === 'undefined') ? 0 : xSpeed;
+    self.ySpeed = (typeof ySpeed === 'undefined') ? 0 : ySpeed;
     self.point = function (codeSpace) {
-        return codeSpace[self.y][self.x];
+        var line = codeSpace[self.y];
+        return (typeof line !== 'undefined') ? line[self.x] : undefined;
     };
-    self.move = function (jung) {
-        switch (self.xs) {
+    self.reflect = function () {
+        self.xSpeed = -self.xSpeed;
+        self.ySpeed = -self.ySpeed;
+    };
+    self.turn = function (jung) {
+        var xSpeed = xSpeedTable[jung];
+        var ySpeed = ySpeedTable[jung];
+        switch (xSpeed) {
         case 'reflect':
-            self.x = -self.x;
+            self.xSpeed = -self.xSpeed;
             break;
         case undefined:
             break;
         default:
-            self.x += self.xs;
+            self.xSpeed = xSpeed;
             break;
         }
-        switch (self.ys) {
+        switch (ySpeed) {
         case 'reflect':
-            self.y = -self.y;
+            self.ySpeed = -self.ySpeed;
             break;
         case undefined:
             break;
         default:
-            self.y += self.ys;
+            self.ySpeed = ySpeed;
             break;
         }
+    };
+    self.move = function (codeSpace) {
+        self.x += self.xSpeed;
+        self.y += self.ySpeed;
+        var line = codeSpace[self.y];
+        if (self.x < 0)
+            self.x = line.length - 1;
+        if (self.x >= line.length && self.xSpeed !== 0)
+            self.x = 0;
+        if (self.y < 0)
+            self.y = codeSpace.length - 1;
+        if (self.y >= codeSpace.length)
+            self.y = 0;
     };
 }
+exports.Cursor = Cursor;
 
 function Storage(type) { // 'stack', 'queue'
     var self = this;
-    var array = [];
-    self.push = array.push;
+    self.push; var array = [];
+    self.pop;
     self.duplicate;
     self.swap;
+    self.send;
+    //
+    self.push = function (v) {
+        return array.push(v);
+    };
+    self.send = function (to) {
+        to.push(self.pop() | 0);
+    };
     switch (type) {
     case 'stack':
-        self.pop = array.pop;
+        self.pop = function () {
+            return array.pop();
+        };
         self.duplicate = function () {
             return array.push(array[array.length - 1]);
         };
         self.swap = function () {
-            // todo
+            var a = array.pop();
+            var b = array.pop();
+            array.push(a);
+            array.push(b);
         };
         break;
     case 'queue':
-        self.pop = array.shift;
+        self.pop = function () {
+            return array.shift();
+        };
         self.duplicate = function () {
-            // todo
+            return array.unshift(a[0]);
         };
         self.swap = function () {
-            // todo
+            var temp = array[0];
+            array[0] = array[1];
+            array[1] = temp;
         };
         break;
     case 'pipe':
         // undefined behavior
-        self.pop = array.shift;
+        self.pop = function () {
+            return array.shift();
+        };
         self.duplicate = function () {
-            // todo
+            return array.unshift(a[0]);
         };
         self.swap = function () {
-            // todo
+            var temp = array[0];
+            array[0] = array[1];
+            array[1] = temp;
         };
         break;
     default:
         throw 'undefined stoarage type: ' + type;
     }
 }
+exports.Storage = Storage;
