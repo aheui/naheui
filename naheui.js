@@ -1,3 +1,7 @@
+var os = require('os');
+var fs = require('fs');
+var util = require('util');
+
 var Aheui = require('./aheui.js');
 
 var helloworld = [ // basic
@@ -157,13 +161,77 @@ var logo = [ // benchmark
     '토끼군작업실제작싸사빠밞밦따발다밣따자파밞밝따밣다밝따파자따산빠싸사빠밦발다박또'
 ].join('\n');
 
+var fibonacchi = [ // duplicate
+    '분받분쌍쌍상빠쌍다쑹',
+    '발또타보라뫃뻐서멍뻐'
+].join('\n');
+
+var add = [ // input
+    '웁하멍머',
+    '바방빤추',
+    '진오임뎌'
+].join('\n');
+
+var bmh = '밯망히'; // character input
+
 function runCode(sourceCode) {
     var machine = new Aheui.Machine(Aheui.codeSpace(sourceCode));
+    machine.input = interactiveInput;
     machine.output = require('util').print;
     machine.run(process.exit);
+}
+
+function interactiveInput(type) {
+    var limit = 255;
+    var platform = os.platform();
+    var input;
+    // print message
+    switch (type) {
+    case 'number':
+        util.print(' type the number and press enter');
+        break;
+    case 'character':
+        util.print(' type the character and press enter');
+        break;
+    }
+    util.print(': ');
+    // read user input
+    switch (platform) {
+    case 'win32':
+        input = (function () {
+            var temp = fs.readSync(process.stdin.fd, limit, 0, 'utf8')[0];
+            return temp.split(/\r?\n/g)[0];
+        })();
+        break;
+    case 'linux': case 'darwin':
+        input = (function () {
+            var fd = fs.openSync('/dev/stdin', 'rs');
+            var buffer = new Buffer(limit);
+            fs.readSync(fd, buffer, 0, buffer.length);
+            fs.closeSync(fd);
+            return buffer.toString().split(/\r?\n/)[0];
+        })();
+        break;
+    default:
+        throw 'unexpected platform: ' + platform;
+        break;
+    }
+    // post-processing
+    switch (type) {
+    case 'number':
+        input = input | 0;
+        break;
+    case 'character':
+        input = input.charCodeAt();
+        break;
+    }
+    return input;
 }
 
 // runCode(helloworld);
 // runCode(gugudan);
 // runCode(bottles);
-runCode(logo);
+// runCode(logo);
+// runCode(fibonacchi);
+// runCode(add);
+runCode(bmh);

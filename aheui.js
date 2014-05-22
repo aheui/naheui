@@ -94,7 +94,7 @@ var operationMap = (function () {
             var pop = storage.pop();
             switch (jongTable[jong]) {
             case 'ㅇ':
-                output(pop + '');
+                output(pop);
                 break;
             case 'ㅎ':
                 output(String.fromCharCode(pop));
@@ -108,10 +108,10 @@ var operationMap = (function () {
             var push = storage.push;
             switch (jongTable[jong]) {
             case 'ㅇ':
-                push(input() | 0);
+                push(input('number'));
                 break;
             case 'ㅎ':
-                push(input().charCodeAt() | 0);
+                push(input('character'));
                 break;
             default:
                 push(strokeCountTable[jong]);
@@ -209,7 +209,7 @@ function code(char) {
 }
 exports.code = code;
 function codeSpace(sourceCode) {
-    return sourceCode.split(/\n|\r\n/g).map(function (line) {
+    return sourceCode.split(/\r?\n/g).map(function (line) {
         return line.split('').map(function (char) {
             return code(char);
         });
@@ -370,7 +370,7 @@ function Storage(type) { // 'stack', 'queue'
             return array.shift();
         };
         self.duplicate = function () {
-            return array.unshift(a[0]);
+            return array.unshift(array[0]);
         };
         self.swap = function () {
             var temp = array[0];
