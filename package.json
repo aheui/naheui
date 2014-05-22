@@ -1,0 +1,33 @@
+{
+  "name": "naheui",
+  "version": "0.1.0",
+  "description": "the aheui implementation for node.js",
+  "main": "aheui.js",
+  "bin": {
+    "naheui": "cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aheui/naheui.git"
+  },
+  "keywords": [
+    "aheui",
+    "interpreter",
+    "esoteric",
+    "language",
+    "hangul",
+    "hangeul"
+  ],
+  "author": "JongChan Choi",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/aheui/naheui/issues"
+  },
+  "homepage": "https://github.com/aheui/naheui",
+  "dependencies": {
+    "minimist": "^0.1.0"
+  }
+}
