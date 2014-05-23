@@ -1,8 +1,9 @@
 {
   "name": "naheui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "the aheui implementation for node.js",
   "main": "aheui.js",
+  "preferGlobal": true,
   "bin": {
     "naheui": "cli.js"
   },
