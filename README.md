@@ -79,6 +79,70 @@ machine.run();
 
 함수가 `true`를 리턴하면 아희 머신이 동작을 멈춥니다.
 
+##### function ([string | object] code): boolean `Aheui.isAheuiCode`, `Aheui.isComment`
+입력받은 문자열이 아희 코드 문자인지 여부를 반환합니다.
+
+`Aheui.isComment`는 그 것의 부정을 반환합니다.
+
+##### function ([number | string | object] code): int `Aheui.cho`, `Aheui.jung`, `Aheui.jong`
+입력받은 문자의 초성을 걸러내서 일치하는 초성 테이블 항목의 인덱스를 반환합니다.
+
+같은 작업을 `Aheui.jung`은 중성, `Aheui.jong`은 종성에 대해서 처리합니다.
+
+인덱스가 들어왔을 경우에는 그대로 반환합니다.
+
+##### function (string char) `Aheui.code`
+아래 코드와 같은 객체를 반환합니다.
+
+```js
+{
+    char: char,
+    cho: Aheui.cho(char),
+    jung: Aheui.jung(char),
+    jong: Aheui.jong(char),
+    toString: function () {
+        return this.char;
+    }
+}
+```
+
+##### function (string sourceCode) `Aheui.codeSpace`
+아희 소스코드를 입력받아서 `Aheui.code`—가 반환하는 객체—로 이루어진
+행우선(line major)의 2차원 배열을 반환합니다.
+
+##### class (string codeSpace) `Aheui.Machine`
+아희 코드를 해석해서 실행시키는 상태머신입니다.
+
+###### Aheui.Cursor `machine.cursor`
+실행할 아희 코드의 위치를 가르키는 객체입니다.
+
+###### Aheui.Storage `machine.storage`
+현재 설정된 저장소입니다. 스택이나 큐, 혹은 확장기능을 위한 통로일 수 있습니다.
+
+###### function (function (int result) terminateFunction) `machine.run`
+아희 프로그램을 실행시킵니다.
+
+실행이 종료되었을 때 호출된 함수(`terminateFunction`)를 인자로 받습니다.
+아희 머신은 실행이 종료되면 현재 저장공간(`machine.storage`)에서 값을 하나 빼와서
+`terminateFunction`으로 인자로 넘겨줍니다.
+
+###### function () `machine.step`
+아희 코드를 한 단계만 평가합니다.
+
+###### function (string type) `machine.input`
+입력을 요청하는 `ㅂ` 명령이 실행될 때 호출될 함수입니다.
+
+`type`으로 `'number'`나 `'character'`가 들어올 수 있습니다.
+
+`machine.input`은 요청 타입에 따라 적절한 값을 반환해주면 됩니다.
+`'number'` 타입으로는 정수를, `'character'` 타입으로는 길이 하나짜리 문자열을 반환하는 것이 적절합니다.
+
+###### function (any value) `machine.output`
+출력을 요쳥하는 `ㅁ` 명령이 실행될 때 호출될 함수입니다.
+
+`value`로는 보통 숫자 또는 문자가 들어오지만 `machine.storage`에 들어있는 값에 따라서
+다른 타입의 값이 들어갈 수도 있습니다.
+
 
 
 // TODO
