@@ -91,7 +91,7 @@ machine.run();
 
 인덱스가 들어왔을 경우에는 그대로 반환합니다.
 
-##### function (string char) `Aheui.code`
+##### function (string char): object `Aheui.code`
 아래 코드와 같은 객체를 반환합니다.
 
 ```js
@@ -106,11 +106,11 @@ machine.run();
 }
 ```
 
-##### function (string sourceCode) `Aheui.codeSpace`
+##### function (string sourceCode): object `Aheui.codeSpace`
 아희 소스코드를 입력받아서 `Aheui.code`—가 반환하는 객체—로 이루어진
 행우선(line major)의 2차원 배열을 반환합니다.
 
-##### class (string codeSpace) `Aheui.Machine`
+##### class (object codeSpace) `Aheui.Machine`
 아희 코드를 해석해서 실행시키는 상태머신입니다.
 
 ###### Aheui.Cursor `machine.cursor`
@@ -127,9 +127,9 @@ machine.run();
 `terminateFunction`으로 인자로 넘겨줍니다.
 
 ###### function () `machine.step`
-아희 코드를 한 단계만 평가합니다.
+아희 코드를 한 단계만 실행합니다.
 
-###### function (string type) `machine.input`
+###### function (string type): any `machine.input`
 입력을 요청하는 `ㅂ` 명령이 실행될 때 호출될 함수입니다.
 
 `type`으로 `'number'`나 `'character'`가 들어올 수 있습니다.
@@ -143,6 +143,39 @@ machine.run();
 `value`로는 보통 숫자 또는 문자가 들어오지만 `machine.storage`에 들어있는 값에 따라서
 다른 타입의 값이 들어갈 수도 있습니다.
 
+###### function ([number | string | object] code): Aheui.Storage `machine.getStorage`
+아희 종성 코드를 인자로 받아서 해당하는 `Aheui.Storage` 인스턴스를 반환합니다.
 
+###### function ([number | string | object] code) `machine.selectStorage`
+아희 종성 코드를 인자로 받아서 해당하는 `Aheui.Storage` 인스턴스를 `machine.stoarge`에 대입합니다.
+
+##### class (int x, int y, int xSpeed, int ySpeed) `Aheui.Cursor`
+실행할 아희 코드의 위치를 가르키기 위한 커서입니다.
+
+###### int `cursor.x`, `cursor.y`
+코드 공간—`Aheui.codeSpace`가 반환하는 객체—의 좌표입니다.
+
+`cursor.y`는 라인을 가르키고, `cursor.x`는 해당하는 라인의 글자위치를 가르킵니다.
+둘 다 `0`부터 시작합니다.
+
+###### int `cursor.xSpeed`, `cursor.ySpeed`
+커서가 한 번—아희 머신이 한 단계 실행될 때마다 한 번씩—에 이동하는 칸의 갯수입니다.
+
+음수일 경우에는 반대방향으로 이동합니다.
+x축으로는 오른쪽, y축으로는 아래쪽이 기본 방향입니다.
+
+###### function (object codeSpace): object `cursor.point`
+코드 공간을 입력받아서 지금 커서가 가르키는 좌표에 있는 코드를 찾아내어 반환합니다.
+
+###### function () `cursor.reflect`
+커서의 속도를 반대로 뒤집습니다.
+
+###### function (int jung) `cursor.turn`
+중성 테이블의 인덱스를 입력받아서 `Aheui.xSpeedTable`, `Aheui.ySpeedTable`에 기술된 대로
+커서의 속도를 전환합니다.
+
+###### function (object codeSpace) `cursor.move`
+커서가 진행하던 속도에 맞춰서 한 번 이동합니다. 코드 공간의 한쪽 끝에 다다르면
+반대쪽 끝으로 이동합니다.
 
 // TODO
