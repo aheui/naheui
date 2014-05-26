@@ -58,6 +58,9 @@ machine.run();
 
 일부 기능에서 동작을 구분하는 인자로 사용됩니다.
 
+##### array `Aheui.parameterCounts`
+`Aheui.choTable`의 각 항목에 대응되는 명령어에 필요한 인자의 개수를 담는 테이블.
+
 ##### array `Aheui.xSpeedTable`, `Aheui.ySpeedTable`
 `Aheui.jungTable`의 각 항목이 나타내는 속력을 담는 테이블.
 `Aheui.xSpeedTable`은 가로방향 속력을 담고 `Aheui.ySpeedTable`은 세로방향 속력을 담습니다.
@@ -211,3 +214,6 @@ x축으로는 오른쪽, y축으로는 아래쪽이 기본 방향입니다.
 
 ###### function (Aheui.Storage to) `storage.send`
 값을 하나 뽑아서(`storage.pop`) 저장공간 `to`에 값을 집어넣습니다(`storage.push`).
+
+###### function (): int `storage.count`
+저장공간에 남어있는 항목의 갯수를 반환합니다.

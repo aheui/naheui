@@ -22,6 +22,17 @@ var jongTable = [
     'ㅌ', 'ㅍ', 'ㅎ'
 ];
 exports.jongTable = jongTable;
+var parameterCounts = [
+    // 'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ',
+    0, 0, 2, 2, 2,
+    // 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ',
+    2, 1, 0, 1, 0,
+    // 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ',
+    1, 0, 2, 0, 1,
+    // 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'
+    0, 2, 2, 0
+];
+exports.parameterCounts = parameterCounts;
 var xSpeedTable = [
     // 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
     1, undefined, 2, undefined, -1,
@@ -262,8 +273,12 @@ function Machine(codeSpace) {
         if (typeof code !== 'undefined') {
             var operation = operationMap[choTable[code.cho]];
             cursor.turn(code.jung);
-            if (typeof operation !== 'undefined')
-                terminateFlag = operation(self, code.jong);
+            if (typeof operation !== 'undefined') {
+                if (self.storage.count() < parameterCounts[code.cho])
+                    self.cursor.reflect();
+                else
+                    terminateFlag = operation(self, code.jong);
+            }
         }
         cursor.move(codeSpace);
     };
@@ -343,12 +358,16 @@ function Storage(type) { // 'stack', 'queue'
     self.duplicate;
     self.swap;
     self.send;
+    self.count;
     //
     self.push = function (v) {
         return array.push(v);
     };
     self.send = function (to) {
         to.push(self.pop() | 0);
+    };
+    self.count = function () {
+        return array.length;
     };
     switch (type) {
     case 'stack':
