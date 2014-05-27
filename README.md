@@ -4,6 +4,7 @@
 [node.js](http://nodejs.org/) 구현체입니다.
 
 [![NPM](https://nodei.co/npm/naheui.png?compact=true)](https://nodei.co/npm/naheui/)
+[![travis](https://travis-ci.org/aheui/naheui.png)](https://travis-ci.org/aheui/naheui)
 
 
 ## 사용법
@@ -13,7 +14,8 @@
 
 ### 커맨드라인 인터페이스
 
- 설치: `npm install -g naheui`
+ 설치: `npm install -g naheui`,
+ 테스트: `npm test -g naheui`
 
  실행: `naheui [아희 프로그램 경로]`
 
