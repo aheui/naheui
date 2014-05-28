@@ -339,13 +339,15 @@ function Cursor(x, y, xSpeed, ySpeed) {
         self.x += self.xSpeed;
         self.y += self.ySpeed;
         var line = codeSpace[self.y];
-        if (self.x < 0)
-            self.x = line.length - 1;
-        if (self.x >= line.length && self.xSpeed !== 0)
+        var width = line ? line.length : 0;
+        var height = codeSpace.length;
+        if (self.x < 0 && self.xSpeed < 0)
+            self.x = width - 1;
+        if (self.x >= width && self.xSpeed > 0)
             self.x = 0;
-        if (self.y < 0)
-            self.y = codeSpace.length - 1;
-        if (self.y >= codeSpace.length)
+        if (self.y < 0 && self.ySpeed < 0)
+            self.y = height - 1;
+        if (self.y >= height && self.ySpeed > 0)
             self.y = 0;
     };
 }
