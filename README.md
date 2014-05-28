@@ -154,6 +154,18 @@ machine.run();
 ###### function ([number | string | object] code) `machine.selectStorage`
 아희 종성 코드를 인자로 받아서 해당하는 `Aheui.Storage` 인스턴스를 `machine.stoarge`에 대입합니다.
 
+###### function (string format): string `machine.dump`
+아희 머신의 현재 상태를 문자열로 반환합니다.
+
+`format`인자로 반환할 형식을 지정할 수 있습니다:
+
+ * `'classic'`, `'classic korean'`, `'jsaheui'`, `'jsaheui korean'`:
+   아희 레퍼런스 구현체인 [jsaheui][jsaheui]의 한국어 디버깅 덤프와 같은 형식으로 반환합니다.
+ * `'classic english'`, `'jsaheui english'`:
+   아희 레퍼런스 구현체인 [jsaheui][jsaheui]의 영어 디버깅 덤프와 같은 형식으로 반환합니다.
+
+[jsaheui]: https://github.com/aheui/jsaheui
+
 ##### class (int x, int y, int xSpeed, int ySpeed) `Aheui.Cursor`
 실행할 아희 코드의 위치를 가르키기 위한 커서입니다.
 
@@ -219,3 +231,11 @@ x축으로는 오른쪽, y축으로는 아래쪽이 기본 방향입니다.
 
 ###### function (): int `storage.count`
 저장공간에 남어있는 항목의 갯수를 반환합니다.
+
+###### function (string format): string `storage.dump`
+저장공간의 현재 상태를 문자열로 반환합니다.
+
+`format`인자로 반환할 형식을 지정할 수 있습니다:
+
+ * `'csv'`: 저장공간에 들어있는 값들을 `','`로 구분한 형식으로 반환합니다.
+ * `'csv reversed'`: 저장공간에 들어있는 값들을 순서를 뒤집고 `','`로 구분한 형식으로 반환합니다.

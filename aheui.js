@@ -238,6 +238,7 @@ function Machine(codeSpace) {
     self.output;
     self.getStorage;
     self.selectStorage;
+    self.dump;
     //
     storages = (function () {
         var storage;
@@ -275,7 +276,7 @@ function Machine(codeSpace) {
             cursor.turn(code.jung);
             if (typeof operation !== 'undefined') {
                 if (self.storage.count() < parameterCounts[code.cho])
-                    self.cursor.reflect();
+                    cursor.reflect();
                 else
                     terminateFlag = operation(self, code.jong);
             }
@@ -293,6 +294,41 @@ function Machine(codeSpace) {
     };
     self.selectStorage = function (code) {
         self.storage = self.getStorage(code);
+    };
+    self.dump = function (format) {
+        switch (format) {
+        default:
+        case 'classic': case 'classic korean':
+        case 'jsaheui': case 'jsaheui korean':
+            return classicStyleDump('ko');
+        case 'classic english': case 'jsaheui english':
+            return classicStyleDump('en');
+        }
+        function classicStyleDump(lang) {
+            var coordMsg;
+            var charMsg;
+            switch (lang) {
+            default: case 'ko':
+                coordMsg = '위치';
+                charMsg = '명령';
+                break;
+            case 'en':
+                coordMsg = 'Coord';
+                charMsg = 'Char';
+                break;
+            }
+            return [
+                coordMsg + ': (' + cursor.x + ', ' + cursor.y + ')',
+                charMsg + ': ' + cursor.point(codeSpace).toString()
+            ].concat(storages.map(function (storage, index) {
+                return [
+                    (storage === self.storage) ? '>' : '',
+                    String.fromCharCode('아'.charCodeAt() + index),
+                    ': ',
+                    storage.dump('csv reversed')
+                ].join('');
+            })).join('\n') + '\n'; // join by newline and add trailing newline
+        }
     };
 }
 exports.Machine = Machine;
@@ -361,6 +397,7 @@ function Storage(type) { // 'stack', 'queue'
     self.swap;
     self.send;
     self.count;
+    self.dump;
     //
     self.push = function (v) {
         return array.push(v);
@@ -370,6 +407,14 @@ function Storage(type) { // 'stack', 'queue'
     };
     self.count = function () {
         return array.length;
+    };
+    self.dump = function (format) {
+        switch (format) {
+        default: case 'csv':
+            return array.join(',');
+        case 'csv reversed':
+            return array.concat().reverse().join(',');
+        }
     };
     switch (type) {
     case 'stack':
