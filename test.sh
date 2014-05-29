@@ -8,4 +8,4 @@ else
 fi
 cd snippets
 chmod 755 ../cli.js
-AHEUI=../cli.js bash test.sh
+AHEUI="../cli.js --interactive-message=false" bash test.sh

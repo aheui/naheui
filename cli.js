@@ -3,7 +3,11 @@
 var os = require('os');
 var fs = require('fs');
 var util = require('util');
-var argv = require('minimist')(process.argv.slice(2));
+var argv = require('minimist')(process.argv.slice(2), {
+    default: {
+        'interactive-message': 'true'
+    }
+});
 
 var Aheui = require('./aheui.js');
 
@@ -32,15 +36,17 @@ function interactiveInput(type) {
     var platform = os.platform();
     var input;
     // print message
-    switch (type) {
-    case 'number':
-        util.print(' type the number and press enter');
-        break;
-    case 'character':
-        util.print(' type the character and press enter');
-        break;
+    if (argv['interactive-message'] !== 'false') {
+        switch (type) {
+        case 'number':
+            util.print(' type the number and press enter');
+            break;
+        case 'character':
+            util.print(' type the character and press enter');
+            break;
+        }
+        util.print(': ');
     }
-    util.print(': ');
     // read user input
     switch (platform) {
     case 'win32':
