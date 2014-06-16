@@ -322,6 +322,7 @@ var Aheui = (function (exports) {
             function classicStyleDump(lang) {
                 var coordMsg;
                 var charMsg;
+                var code = cursor.point(codeSpace);
                 switch (lang) {
                 default: case 'ko':
                     coordMsg = '위치';
@@ -334,7 +335,7 @@ var Aheui = (function (exports) {
                 }
                 return [
                     coordMsg + ': (' + cursor.x + ', ' + cursor.y + ')',
-                    charMsg + ': ' + cursor.point(codeSpace).toString()
+                    charMsg + ': ' + (code ? code.toString() : '')
                 ].concat(storages.map(function (storage, index) {
                     return [
                         (storage === self.storage) ? '>' : '',
