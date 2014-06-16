@@ -44,7 +44,7 @@ var Aheui = (function (exports) {
         // 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ',
         undefined, undefined, 0, 0, undefined,
         // 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
-        undefined, undefined, 0, 0, 'reflect',
+        undefined, undefined, 0, undefined, 'reflect',
         // 'ㅣ'
         'reflect'
     ];
@@ -59,7 +59,7 @@ var Aheui = (function (exports) {
         // 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
         undefined, undefined, 2, 'reflect', 'reflect',
         // 'ㅣ'
-        0
+        undefined
     ];
     exports.ySpeedTable = ySpeedTable;
     var strokeCountTable = [
@@ -211,13 +211,25 @@ var Aheui = (function (exports) {
     exports.jong = jong;
 
     function code(char) {
-        return {
-            char: char,
-            cho: cho(char),
-            jung: jung(char),
-            jong: jong(char),
-            toString: function () {
-                return this.char;
+        function toString() {
+            return char;
+        }
+        if (isAheuiCode(char)) {
+            return {
+                char: char,
+                cho: cho(char),
+                jung: jung(char),
+                jong: jong(char),
+                toString: toString
+            }
+        }
+        else {
+            return {
+                char: char,
+                cho: -1,
+                jung: -1,
+                jong: -1,
+                toString: toString
             }
         }
     }

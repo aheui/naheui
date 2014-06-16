@@ -1,6 +1,6 @@
 {
   "name": "naheui",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "the aheui implementation for node.js",
   "main": "aheui.js",
   "preferGlobal": true,

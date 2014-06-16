@@ -111,6 +111,8 @@ machine.run();
 }
 ```
 
+단, `char`가 유효하지 않은 아희 코드일 경우 `cho`, `jung`, `jong`에는 `-1`이 들어갑니다.
+
 ##### function (string sourceCode): object `Aheui.codeSpace`
 아희 소스코드를 입력받아서 `Aheui.code`—가 반환하는 객체—로 이루어진
 행우선(line major)의 2차원 배열을 반환합니다.
