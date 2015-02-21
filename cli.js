@@ -27,7 +27,9 @@ runCode(sourceCode);
 function runCode(sourceCode) {
     var machine = new Aheui.Machine(Aheui.codeSpace(sourceCode));
     machine.input = interactiveInput;
-    machine.output = util.print;
+    machine.output = function (value) {
+        process.stdout.write(value + '');
+    };
     machine.run(process.exit);
 }
 
@@ -39,13 +41,12 @@ function interactiveInput(type) {
     if (argv['interactive-message'] !== 'false') {
         switch (type) {
         case 'number':
-            util.print(' type the number and press enter');
+            process.stdout.write(' type the number and press enter: ');
             break;
         case 'character':
-            util.print(' type the character and press enter');
+            process.stdout.write(' type the character and press enter: ');
             break;
         }
-        util.print(': ');
     }
     // read user input
     switch (platform) {
