@@ -19,7 +19,7 @@ try {
     });
 }
 catch (e) {
-    console.log('file not found: ' + e.path);
+    console.error('file not found: ' + e.path);
     process.exit(1);
 }
 runCode(sourceCode);
@@ -41,10 +41,10 @@ function interactiveInput(type) {
     if (argv['interactive-message'] !== 'false') {
         switch (type) {
         case 'number':
-            process.stdout.write(' type the number and press enter: ');
+            process.stderr.write(' type the number and press enter: ');
             break;
         case 'character':
-            process.stdout.write(' type the character and press enter: ');
+            process.stderr.write(' type the character and press enter: ');
             break;
         }
     }
