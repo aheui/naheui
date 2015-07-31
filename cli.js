@@ -11,6 +11,7 @@ var argv = require('minimist')(process.argv.slice(2), {
 
 var Aheui = require('./aheui.js');
 
+var left = [];
 var filename = argv._[0] + '';
 var sourceCode;
 try {
@@ -33,6 +34,7 @@ function runCode(sourceCode) {
     machine.run(process.exit);
 }
 
+
 function interactiveInput(type) {
     var limit = 255;
     var platform = os.platform();
@@ -48,26 +50,30 @@ function interactiveInput(type) {
             break;
         }
     }
+    if (left.length !== 0) input = left.shift();
     // read user input
-    switch (platform) {
-    case 'win32':
-        input = (function () {
-            var temp = fs.readSync(process.stdin.fd, limit, 0, 'utf8')[0];
-            return temp.split(/\r?\n/g)[0];
-        })();
-        break;
-    case 'linux': case 'darwin':
-        input = (function () {
-            var fd = fs.openSync('/dev/stdin', 'rs');
-            var buffer = new Buffer(limit);
-            fs.readSync(fd, buffer, 0, buffer.length);
-            fs.closeSync(fd);
-            return buffer.toString().split(/\r?\n/)[0];
-        })();
-        break;
-    default:
-        throw 'unexpected platform: ' + platform;
-        break;
+    else {
+        switch (platform) {
+        case 'win32':
+            input = (function () {
+                var temp = fs.readSync(process.stdin.fd, limit, 0, 'utf8')[0];
+                return (left = temp.split(/\r?\n/g)).shift();
+            })();
+            break;
+        case 'linux': case 'darwin':
+            input = (function () {
+                var fd = fs.openSync('/dev/stdin', 'rs');
+                var buffer = new Buffer(limit);
+                fs.readSync(fd, buffer, 0, buffer.length);
+                fs.closeSync(fd);
+                return (left = buffer.toString().split(/\r?\n/)).shift();
+            })();
+            break;
+        default:
+            throw 'unexpected platform: ' + platform;
+            break;
+        }
+        left = left.filter(function (v) {return v !== ""});
     }
     // post-processing
     switch (type) {
