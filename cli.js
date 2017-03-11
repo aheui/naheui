@@ -11,6 +11,11 @@ var argv = require('minimist')(process.argv.slice(2), {
 
 var Aheui = require('./aheui.js');
 
+if (argv['version']) {
+    const package = require('./package');
+    console.log(package.version);
+    process.exit(0);
+}
 var left = [];
 var filename = argv._[0] + '';
 var sourceCode;
