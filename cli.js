@@ -68,26 +68,38 @@ function interactiveInput(type) {
         case 'linux': case 'darwin':
             input = (function () {
                 var fd = fs.openSync('/dev/stdin', 'rs');
-                var buffer = new Buffer(limit);
+                var buffer = Buffer.alloc(limit);
                 fs.readSync(fd, buffer, 0, buffer.length);
                 fs.closeSync(fd);
-                return (left = buffer.toString().split(/\r?\n/)).shift();
+                return (left = buffer.toString().split(/\r?\n/g)).shift();
             })();
             break;
         default:
             throw 'unexpected platform: ' + platform;
             break;
         }
-        left = left.filter(function (v) {return v !== ""});
+        left = left.filter(function (v) {return v !== ''});
     }
     // post-processing
+    var _input = input;
+    var _left = '';
     switch (type) {
     case 'number':
-        input = input | 0;
+        input = /^[-+]?\d+/.exec(_input);
+        if (input) {
+            _left = _input.substr(input[0].length);
+            input = input[0] | 0;
+        } else {
+            input = 0;
+        }
         break;
     case 'character':
-        input = input.charCodeAt();
+        input = _input.codePointAt();
+        _left = _input.substr(String.fromCodePoint(input).length);
         break;
+    }
+    if (_left) {
+        left.unshift(_left);
     }
     return input;
 }

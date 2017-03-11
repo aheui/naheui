@@ -111,7 +111,7 @@ var Aheui = (function (exports) {
                     output(pop);
                     break;
                 case 'ㅎ':
-                    output(String.fromCharCode(pop));
+                    output(String.fromCodePoint(pop));
                     break;
                 }
                 return false;
