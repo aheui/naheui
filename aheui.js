@@ -245,9 +245,10 @@ var Aheui = (function (exports) {
 
     function Machine(codeSpace) {
         var self = this;
+        self.terminated = false;
         self.cursor; var cursor;
         self.storage; var storages;
-        self.run; var terminateFlag;
+        self.run;
         self.step;
         self.input;
         self.output;
@@ -277,8 +278,8 @@ var Aheui = (function (exports) {
         self.cursor = cursor = new Cursor(0, 0, 0, 1);
         self.storage = storages[0];
         self.run = function (terminateFunction) {
-            terminateFlag = false;
-            while (!terminateFlag)
+            self.terminated = false;
+            while (!self.terminated)
                 self.step();
             var result = self.storage.pop() | 0;
             if (typeof terminateFunction !== 'undefined')
@@ -293,10 +294,11 @@ var Aheui = (function (exports) {
                     if (self.storage.count() < parameterCounts[code.cho])
                         cursor.reflect();
                     else
-                        terminateFlag = operation(self, code.jong);
+                        self.terminated = operation(self, code.jong);
                 }
             }
-            cursor.move(codeSpace);
+            if (!self.terminated)
+                cursor.move(codeSpace);
         };
         self.input = function () {
             return '';

@@ -123,6 +123,9 @@ machine.run();
 ###### Aheui.Cursor `machine.cursor`
 실행할 아희 코드의 위치를 가르키는 객체입니다.
 
+###### boolean `machine.terminated`
+아희 프로그램이 종료되었는지 여부를 나타내는 값입니다.
+
 ###### Aheui.Storage `machine.storage`
 현재 설정된 저장소입니다. 스택이나 큐, 혹은 확장기능을 위한 통로일 수 있습니다.
 
