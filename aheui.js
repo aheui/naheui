@@ -287,18 +287,28 @@ var Aheui = (function (exports) {
         };
         self.step = function () {
             var code = cursor.point(codeSpace);
+            var cursorTurnResult = null;
+            var cursorReflectResult = null;
+            var cursorMoveResult = null;
             if (typeof code !== 'undefined') {
                 var operation = operationMap[choTable[code.cho]];
-                cursor.turn(code.jung);
+                cursorTurnResult = cursor.turn(code.jung);
                 if (typeof operation !== 'undefined') {
-                    if (self.storage.count() < parameterCounts[code.cho])
-                        cursor.reflect();
-                    else
+                    if (self.storage.count() < parameterCounts[code.cho]) {
+                        cursorReflectResult = cursor.reflect();
+                    } else {
                         self.terminated = operation(self, code.jong);
+                    }
                 }
             }
-            if (!self.terminated)
-                cursor.move(codeSpace);
+            if (!self.terminated) {
+                cursorMoveResult = cursor.move(codeSpace);
+            }
+            return {
+                cursorTurnResult: cursorTurnResult,
+                cursorReflectResult: cursorReflectResult,
+                cursorMoveResult: cursorMoveResult
+            };
         };
         self.input = function () {
             return '';
@@ -364,45 +374,81 @@ var Aheui = (function (exports) {
         self.reflect = function () {
             self.xSpeed = -self.xSpeed;
             self.ySpeed = -self.ySpeed;
+            return {
+                xReflected: self.xSpeed !== 0,
+                yReflected: self.ySpeed !== 0
+            };
         };
         self.turn = function (jung) {
             var xSpeed = xSpeedTable[jung];
             var ySpeed = ySpeedTable[jung];
+            var xReflected = false;
+            var yReflected = false;
+            var xTurned = false;
+            var yTurned = false;
             switch (xSpeed) {
             case 'reflect':
+                if (self.xSpeed !== 0) xReflected = true;
                 self.xSpeed = -self.xSpeed;
                 break;
             case undefined:
                 break;
             default:
+                if (self.xSpeed !== xSpeed) xTurned = true;
                 self.xSpeed = xSpeed;
                 break;
             }
             switch (ySpeed) {
             case 'reflect':
+                if (self.ySpeed !== 0) yReflected = true;
                 self.ySpeed = -self.ySpeed;
                 break;
             case undefined:
                 break;
             default:
+                if (self.ySpeed !== ySpeed) yTurned = true;
                 self.ySpeed = ySpeed;
                 break;
             }
+            return {
+                xReflected: xReflected,
+                yReflected: yReflected,
+                xTurned: xTurned,
+                yTurned: yTurned
+            };
         };
         self.move = function (codeSpace) {
+            var xSpeed = self.xSpeed;
+            var ySpeed = self.ySpeed;
+            var xWrapped = false;
+            var yWrapped = false;
             self.x += self.xSpeed;
             self.y += self.ySpeed;
             var line = codeSpace[self.y];
             var width = line ? line.length : 0;
             var height = codeSpace.length;
-            if (self.x < 0 && self.xSpeed < 0)
+            if (self.x < 0 && self.xSpeed < 0) {
+                xWrapped = true;
                 self.x = width - 1;
-            if (self.x >= width && self.xSpeed > 0)
+            }
+            if (self.x >= width && self.xSpeed > 0) {
+                xWrapped = true;
                 self.x = 0;
-            if (self.y < 0 && self.ySpeed < 0)
+            }
+            if (self.y < 0 && self.ySpeed < 0) {
+                yWrapped = true;
                 self.y = height - 1;
-            if (self.y >= height && self.ySpeed > 0)
+            }
+            if (self.y >= height && self.ySpeed > 0) {
+                yWrapped = true;
                 self.y = 0;
+            }
+            return {
+                xSpeed: xSpeed,
+                ySpeed: ySpeed,
+                xWrapped: xWrapped,
+                yWrapped: yWrapped
+            };
         };
     }
     exports.Cursor = Cursor;
