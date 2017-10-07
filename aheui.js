@@ -276,7 +276,8 @@ var Aheui = (function (exports) {
             return storages;
         })();
         self.cursor = cursor = new Cursor(0, 0, 0, 1);
-        self.storage = storages[0];
+        self._selectedStorage = 0;
+        self.storage = storages[self._selectedStorage];
         self.run = function (terminateFunction) {
             self.terminated = false;
             while (!self.terminated)
@@ -320,7 +321,8 @@ var Aheui = (function (exports) {
             return storages[jong(code)];
         };
         self.selectStorage = function (code) {
-            self.storage = self.getStorage(code);
+            self._selectedStorage = jong(code);
+            self.storage = self.getStorage(self._selectedStorage);
         };
         self.dump = function (format) {
             switch (format) {
