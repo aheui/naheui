@@ -463,6 +463,9 @@ var Aheui = (function (exports) {
         self.count;
         self.dump;
         //
+        self._getArray = function () {
+            return array;
+        };
         self.push = function (v) {
             return array.push(v);
         };
