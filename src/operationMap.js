@@ -2,11 +2,11 @@ const { character, count } = require('./table')
 
 const arithmetic = (operator) => {
   return (machine, jong) => {
-    const { storage } = machine
-    const right = storage.pop() | 0
-    const left = storage.pop() | 0
+    const { __storage } = machine
+    const right = __storage.pop() | 0
+    const left = __storage.pop() | 0
 
-    storage.push(operator(left, right) | 0)
+    __storage.push(operator(left, right) | 0)
   }
 }
 
@@ -21,40 +21,40 @@ module.exports = {
   ㅇ: (machine, jong) => false,
   ㅎ: (machine, jong) => true,
   ㅃ (machine, jong) {
-    machine.storage.duplicate()
+    machine.__storage.duplicate()
 
     return NOTHING
   },
   ㅍ (machine, jong) {
-    machine.storage.swap()
+    machine.__storage.swap()
 
     return NOTHING
   },
   ㅅ (machine, jong) {
-    machine.storage.selectStorage(jong)
+    machine.__storage.__selectStorage(jong)
 
     return NOTHING
   },
   ㅆ (machine, jong) {
-    machine.storage.send(machine.getStorage(jong))
+    machine.__storage.send(machine.getStorage(jong))
 
     return NOTHING
   },
   ㅊ (machine, jong) {
-    if (machine.storage.pop() !== 0) return NOTHING
+    if (machine.__storage.pop() !== 0) return NOTHING
 
-    machine.cursor.reflect()
+    machine.__cursor.reflect()
   },
   ㅈ (machine, jong) {
-    const { storage } = machine
-    const right = storage.pop()
-    const left = storage.pop()
+    const { __storage } = machine
+    const right = __storage.pop()
+    const left = __storage.pop()
 
-    storage.push((right <= left) ? 1 : 0)
+    __storage.push((right <= left) ? 1 : 0)
   },
   ㅁ (machine, jong) {
-    const { storage, output } = machine
-    const pop = storage.pop()
+    const { __storage, output } = machine
+    const pop = __storage.pop()
 
     switch (character.jong[jong]) {
     case 'ㅇ':
@@ -66,17 +66,17 @@ module.exports = {
     }
   },
   ㅂ (machine, jong) {
-    const { storage, input } = machine
+    const { __storage, input } = machine
 
     switch (character.jong[jong]) {
     case 'ㅇ':
-      storage.push(input('number'))
+      __storage.push(input('number'))
       break
     case 'ㅎ':
-      storage.push(input('character'))
+      __storage.push(input('character'))
       break
     default:
-      storage.push(count.stroke[jong])
+      __storage.push(count.stroke[jong])
       break
     }
   }
