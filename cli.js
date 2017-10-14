@@ -9,7 +9,7 @@ var argv = require('minimist')(process.argv.slice(2), {
     }
 });
 
-var Aheui = require('./aheui.js');
+var Aheui = require('./src');
 
 if (argv['version']) {
     const package = require('./package');
@@ -38,7 +38,6 @@ function runCode(sourceCode) {
     };
     machine.run(process.exit);
 }
-
 
 function interactiveInput(type) {
     var limit = 255;
