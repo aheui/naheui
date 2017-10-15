@@ -1,4 +1,4 @@
-const reflect = 'reflect'
+const reflect = 'reflect';
 
 module.exports.x = [
     // 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
@@ -10,8 +10,8 @@ module.exports.x = [
     // 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
     undefined, undefined, 0, undefined, reflect,
     // 'ㅣ'
-    reflect
-]
+    reflect,
+];
 
 module.exports.y = [
     // 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ',
@@ -23,5 +23,5 @@ module.exports.y = [
     // 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ',
     undefined, undefined, 2, reflect, reflect,
     // 'ㅣ'
-    undefined
-]
+    undefined,
+];

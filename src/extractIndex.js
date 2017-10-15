@@ -1,22 +1,22 @@
-const is = require('./is')
+const is = require('./is');
 
 module.exports = (table, extractFunction) => {
-    const __extractIndex = (code) => {
+    const _extractIndex = (code) => {
         switch (typeof code) {
         case 'number':
-            return code | 0
+            return code | 0;
         case 'string':
-            const __code = code.charAt()
+            const _code = code.charAt();
     
-            return (is.aheuiCode(__code))
+            return (is.aheuiCode(_code))
                 ? extractFunction(code.charCodeAt() - '가'.charCodeAt())
-                : table.indexOf(code)
+                : table.indexOf(code);
         case 'object':
-            return __extractIndex(code.toString())
+            return _extractIndex(code.toString());
         default:
-            return -1
+            return -1;
         }
-    }
+    };
 
-    return __extractIndex
-}
+    return _extractIndex;
+};

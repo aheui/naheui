@@ -1,16 +1,16 @@
-const { character, count } = require('./table')
+const { character, count } = require('./table');
 
 const arithmetic = (operator) => {
     return (machine, jong) => {
-        const { __storage } = machine
-        const right = __storage.pop() | 0
-        const left = __storage.pop() | 0
+        const { _storage } = machine;
+        const right = _storage.pop() | 0;
+        const left = _storage.pop() | 0;
 
-        __storage.push(operator(left, right) | 0)
-    }
-}
+        _storage.push(operator(left, right) | 0);
+    };
+};
 
-const NOTHING = false
+const NOTHING = false;
 
 module.exports = {
     ㄷ: arithmetic((left, right) => left + right),
@@ -20,64 +20,64 @@ module.exports = {
     ㄹ: arithmetic((left, right) => left % right),
     ㅇ: (machine, jong) => false,
     ㅎ: (machine, jong) => true,
-    ㅃ (machine, jong) {
-        machine.__storage.duplicate()
+    ㅃ(machine, jong) {
+        machine._storage.duplicate();
 
-        return NOTHING
+        return NOTHING;
     },
-    ㅍ (machine, jong) {
-        machine.__storage.swap()
+    ㅍ(machine, jong) {
+        machine._storage.swap();
 
-        return NOTHING
+        return NOTHING;
     },
-    ㅅ (machine, jong) {
-        machine.__storage.__selectStorage(jong)
+    ㅅ(machine, jong) {
+        machine._storage._selectStorage(jong);
 
-        return NOTHING
+        return NOTHING;
     },
-    ㅆ (machine, jong) {
-        machine.__storage.send(machine.getStorage(jong))
+    ㅆ(machine, jong) {
+        machine._storage.send(machine.getStorage(jong));
 
-        return NOTHING
+        return NOTHING;
     },
-    ㅊ (machine, jong) {
-        if (machine.__storage.pop() !== 0) return NOTHING
+    ㅊ(machine, jong) {
+        if (machine._storage.pop() !== 0) return NOTHING;
 
-        machine.__cursor.reflect()
+        machine._cursor.reflect();
     },
-    ㅈ (machine, jong) {
-        const { __storage } = machine
-        const right = __storage.pop()
-        const left = __storage.pop()
+    ㅈ(machine, jong) {
+        const { _storage } = machine;
+        const right = _storage.pop();
+        const left = _storage.pop();
 
-        __storage.push((right <= left) ? 1 : 0)
+        _storage.push((right <= left) ? 1 : 0);
     },
-    ㅁ (machine, jong) {
-        const { __storage, output } = machine
-        const pop = __storage.pop()
+    ㅁ(machine, jong) {
+        const { _storage, output } = machine;
+        const pop = _storage.pop();
 
         switch (character.jong[jong]) {
         case 'ㅇ':
-            output(pop)
-            break
+            output(pop);
+            break;
         case 'ㅎ':
-            output(String.fromCodePoint(pop))
-            break
+            output(String.fromCodePoint(pop));
+            break;
         }
     },
-    ㅂ (machine, jong) {
-        const { __storage, input } = machine
+    ㅂ(machine, jong) {
+        const { _storage, input } = machine;
 
         switch (character.jong[jong]) {
         case 'ㅇ':
-            __storage.push(input('number'))
-            break
+            _storage.push(input('number'));
+            break;
         case 'ㅎ':
-            __storage.push(input('character'))
-            break
+            _storage.push(input('character'));
+            break;
         default:
-            __storage.push(count.stroke[jong])
-            break
+            _storage.push(count.stroke[jong]);
+            break;
         }
-    }
-}
+    },
+};
