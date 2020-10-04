@@ -29,6 +29,6 @@
   },
   "homepage": "https://github.com/aheui/naheui",
   "dependencies": {
-    "minimist": "^0.1.0"
+    "minimist": "^1.2.5"
   }
 }
