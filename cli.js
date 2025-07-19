@@ -61,7 +61,9 @@ function interactiveInput(type) {
         switch (platform) {
         case 'win32':
             input = (function () {
-                var temp = fs.readSync(process.stdin.fd, limit, 0, 'utf8')[0];
+                var buffer = Buffer.alloc(limit);
+                var bytesRead = fs.readSync(process.stdin.fd, buffer, 0, buffer.length, null);
+                var temp = buffer.toString('utf8', 0, bytesRead);
                 return (left = temp.split(/\r?\n/g)).shift();
             })();
             break;
