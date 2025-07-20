@@ -1,3 +1,5 @@
+import { type Cursor } from "../machine.ts";
+
 // moment는 4바이트로 이루어져있음
 //
 // 각 바이트는 다음을 의미함 (lower byte부터)
@@ -67,6 +69,14 @@ const outConnectedMask = 0x01000000;
 
 function toDirstr(num: number): DirStr {
   return dirstrs[num] || "down";
+}
+
+export function getCursorDir(cursor: Cursor): DirStr {
+  if (cursor.dy < 0) return "up";
+  if (cursor.dy > 0) return "down";
+  if (cursor.dx < 0) return "left";
+  if (cursor.dx > 0) return "right";
+  return "down";
 }
 
 export function getInDir(bitfields: number): DirStr {

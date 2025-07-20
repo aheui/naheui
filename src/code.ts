@@ -11,6 +11,11 @@ export function createCodeSpace(sourceCode: string): CodeSpace {
   );
 }
 
+export function isValidAheuiCode(code?: Code): code is Code {
+  if (!code) return false;
+  return code.idx > -1;
+}
+
 export type CodeSpace = Code[][];
 export class Code {
   public readonly idx: number; // 가(0)-힣(11171) 중 몇번째에 해당하는지

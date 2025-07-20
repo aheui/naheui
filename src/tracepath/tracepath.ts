@@ -51,7 +51,7 @@ export function stepBack(tracepath: Tracepath): void {
 
 export function burn(tracepath: Tracepath): void {
   for (const moment of tracepath) --moment[2];
-  const rest = tracepath.filter((moment) => moment[2] > 0);
+  const rest = tracepath.filter((moment) => moment[2] >= 0);
   tracepath.length = 0;
   tracepath.push(...rest);
 }

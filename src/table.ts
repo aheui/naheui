@@ -1,30 +1,39 @@
 // deno-fmt-ignore-file
 
-export const choTable = [
+export const choTable = Object.freeze([
   "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ",
   "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ",
   "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ",
   "ㅋ", "ㅌ", "ㅍ", "ㅎ",
-] as const;
+] as const);
+export const chos = Object.freeze(Object.fromEntries(
+  choTable.map((cho, idx) => [cho, idx])
+)) as Record<typeof choTable[number], number>;
 
-export const jungTable = [
+export const jungTable = Object.freeze([
   "ㅏ", "ㅐ", "ㅑ", "ㅒ", "ㅓ",
   "ㅔ", "ㅕ", "ㅖ", "ㅗ", "ㅘ",
   "ㅙ", "ㅚ", "ㅛ", "ㅜ", "ㅝ",
   "ㅞ", "ㅟ", "ㅠ", "ㅡ", "ㅢ",
   "ㅣ",
-] as const;
+] as const);
+export const jungs = Object.freeze(Object.fromEntries(
+  jungTable.map((jung, idx) => [jung, idx])
+)) as Record<typeof jungTable[number], number>;
 
-export const jongTable = [
+export const jongTable = Object.freeze([
   "", "ㄱ", "ㄲ", "ㄳ", "ㄴ",
   "ㄵ", "ㄶ", "ㄷ", "ㄹ", "ㄺ",
   "ㄻ", "ㄼ", "ㄽ", "ㄾ", "ㄿ",
   "ㅀ", "ㅁ", "ㅂ", "ㅄ", "ㅅ",
   "ㅆ", "ㅇ", "ㅈ", "ㅊ", "ㅋ",
   "ㅌ", "ㅍ", "ㅎ",
-] as const;
+] as const);
+export const jongs = Object.freeze(Object.fromEntries(
+  jongTable.map((jong, idx) => [jong, idx])
+)) as Record<typeof jongTable[number], number>;
 
-export const parameterCounts = [
+export const parameterCounts = Object.freeze([
   // ㄱ, ㄲ, ㄴ, ㄷ, ㄸ,
   0, 0, 2, 2, 2,
   // ㄹ, ㅁ, ㅂ, ㅃ, ㅅ,
@@ -33,7 +42,7 @@ export const parameterCounts = [
   1, 0, 2, 0, 1,
   // ㅋ, ㅌ, ㅍ, ㅎ
   0, 2, 2, 0,
-] as const;
+] as const);
 
 export const reflect = 1 << 8;
 export const ignore = 2 << 8;
@@ -47,7 +56,7 @@ export const ignore = 2 << 8;
  * - 1: 반사(reflect) 속도
  * - 2: 무시(ignore) 속도
  */
-export const dxTable = [
+export const dxTable = Object.freeze([
   // ㅏ, ㅐ, ㅑ, ㅒ, ㅓ,
   1, ignore, 2, ignore, -1,
   // ㅔ, ㅕ, ㅖ, ㅗ, ㅘ,
@@ -58,10 +67,10 @@ export const dxTable = [
   ignore, ignore, 0, ignore, reflect,
   // ㅣ
   reflect,
-] as const;
+] as const);
 
 // dxTable과 동일한 구조를 가짐
-export const dyTable = [
+export const dyTable = Object.freeze([
   // ㅏ, ㅐ, ㅑ, ㅒ, ㅓ,
   0, ignore, 0, ignore, 0,
   // ㅔ, ㅕ, ㅖ, ㅗ, ㅘ,
@@ -72,9 +81,9 @@ export const dyTable = [
   ignore, ignore, 2, reflect, reflect,
   // ㅣ
   ignore,
-] as const;
+] as const);
 
-export const strokeCountTable = [
+export const strokeCountTable = Object.freeze([
   // , ㄱ, ㄲ, ㄳ, ㄴ,
   0, 2, 4, 4, 2,
   // ㄵ, ㄶ, ㄷ, ㄹ, ㄺ,
@@ -87,4 +96,4 @@ export const strokeCountTable = [
   4, 1, 3, 4, 3,
   // ㅌ, ㅍ, ㅎ
   4, 4, 3,
-] as const;
+] as const);
