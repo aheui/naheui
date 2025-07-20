@@ -46,6 +46,20 @@ export function getSideTable(bitfields: number): SideTable {
   };
 }
 
+export function getMomentBitfields(
+  inDir: DirStr,
+  outDir: DirStr,
+  inConnected: boolean,
+  outConnected: boolean,
+): number {
+  return (
+    dirnums[inDir] |
+    (dirnums[outDir] << 8) |
+    (inConnected ? inConnectedMask : 0) |
+    (outConnected ? outConnectedMask : 0)
+  );
+}
+
 const inDirMask = 0x000000ff;
 const outDirMask = 0x0000ff00;
 const inConnectedMask = 0x00010000;
