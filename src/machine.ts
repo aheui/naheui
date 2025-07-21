@@ -83,6 +83,23 @@ export async function run(config: RunConfig): Promise<RunResult> {
       if (storageSize < code.parameterCount) reflectCursor(machineState.cursor);
       else if (arithmeticOperations.has(code.cho)) {
         doArithmeticOperation(machineState, code);
+      } else if (code.cho === chos.ㅁ) {
+        const storageIndex = machineState.currentStorageIndex;
+        const storage = machineState.storages[storageIndex];
+        const value = pop(storage, storageIndex)!;
+        if (code.jong === jongs.ㅇ) {
+          config.numOutput(value);
+        } else if (code.jong === jongs.ㅎ) {
+          config.strOutput(String.fromCharCode(value));
+        }
+      } else if (code.cho === chos.ㅂ) {
+        const storageIndex = machineState.currentStorageIndex;
+        const storage = machineState.storages[storageIndex];
+        if (code.jong === jongs.ㅇ) {
+          storage.push(await config.numInput());
+        } else if (code.jong === jongs.ㅎ) {
+          storage.push((await config.strInput()).codePointAt(0) ?? 0);
+        } else storage.push(code.strokeCount);
       } else doOperation(machineState, code);
     }
     if (!machineState.terminated) {
