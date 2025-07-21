@@ -1,5 +1,13 @@
-import { type CodeSpace, isValidAheuiCode } from "./code.ts";
-import { dxTable, dyTable, ignore, jongTable, reflect } from "./table.ts";
+import { Code, type CodeSpace, isValidAheuiCode } from "./code.ts";
+import {
+  chos,
+  dxTable,
+  dyTable,
+  ignore,
+  jongs,
+  jongTable,
+  reflect,
+} from "./table.ts";
 import {
   getCursorDir,
   getMomentBitfields,
@@ -11,7 +19,7 @@ import { step as stepTracepath, Tracepath } from "./tracepath/tracepath.ts";
 export interface MachineState {
   cursor: Cursor;
   storages: number[][];
-  currentStorage: number;
+  currentStorageIndex: number;
   terminated: boolean;
   tracepath: Tracepath;
 }
@@ -32,7 +40,7 @@ export function createMachineState(): MachineState {
   return {
     cursor: { x: 0, y: 0, dx: 0, dy: 1 },
     storages: jongTable.map(() => []),
-    currentStorage: 0,
+    currentStorageIndex: 0,
     terminated: false,
     tracepath: [],
   };
@@ -73,7 +81,7 @@ export async function run(config: RunConfig): Promise<RunResult> {
       turnCursor(machineState.cursor, code.jung);
       const storageSize = getCurrentStorageSize(machineState);
       if (storageSize < code.parameterCount) reflectCursor(machineState.cursor);
-      // TODO: do operation
+      else doOperation(machineState, code);
     }
     if (!machineState.terminated) {
       moveCursor(machineState, codeSpace, tracepathFuel);
@@ -83,7 +91,85 @@ export async function run(config: RunConfig): Promise<RunResult> {
 }
 
 function getCurrentStorageSize(machineState: MachineState): number {
-  return machineState.storages[machineState.currentStorage].length;
+  return machineState.storages[machineState.currentStorageIndex].length;
+}
+
+function doOperation(machineState: MachineState, code: Code): void {
+  switch (code.cho) {
+    case chos.ㅎ:
+      machineState.terminated = true;
+      return;
+    case chos.ㅃ: {
+      const storageIndex = machineState.currentStorageIndex;
+      const storage = machineState.storages[storageIndex];
+      duplicate(storage, storageIndex);
+      return;
+    }
+    case chos.ㅍ: {
+      const storageIndex = machineState.currentStorageIndex;
+      const storage = machineState.storages[storageIndex];
+      swap(storage, storageIndex);
+      return;
+    }
+    case chos.ㅅ:
+      machineState.currentStorageIndex = code.jong;
+      return;
+    case chos.ㅆ: {
+      const srcStorageIndex = machineState.currentStorageIndex;
+      const srcStorage = machineState.storages[srcStorageIndex];
+      const dstStorage = machineState.storages[code.jong];
+      send(dstStorage, srcStorage, srcStorageIndex);
+      return;
+    }
+    case chos.ㅈ: {
+      const storageIndex = machineState.currentStorageIndex;
+      const storage = machineState.storages[machineState.currentStorageIndex];
+      const a = pop(storage, storageIndex)!;
+      const b = pop(storage, storageIndex)!;
+      storage.push((a <= b) ? 1 : 0);
+      return;
+    }
+    case chos.ㅊ: {
+      const storageIndex = machineState.currentStorageIndex;
+      const storage = machineState.storages[machineState.currentStorageIndex];
+      if (pop(storage, storageIndex) === 0) reflectCursor(machineState.cursor);
+    }
+  }
+}
+
+function send(
+  dstStorage: number[],
+  srcStorage: number[],
+  srcStorageIndex: number,
+): void {
+  dstStorage.push(pop(srcStorage, srcStorageIndex)!);
+}
+
+function pop(storage: number[], storageIndex: number): number | undefined {
+  const isQueue = storageIndex === jongs.ㅇ || storageIndex === jongs.ㅎ;
+  if (isQueue) return storage.shift();
+  return storage.pop();
+}
+
+function duplicate(storage: number[], storageIndex: number): void {
+  const isQueue = storageIndex === jongs.ㅇ || storageIndex === jongs.ㅎ;
+  if (isQueue) storage.unshift(storage[0]);
+  else storage.push(storage[storage.length - 1]);
+}
+
+function swap(storage: number[], storageIndex: number): void {
+  const isQueue = storageIndex === jongs.ㅇ || storageIndex === jongs.ㅎ;
+  if (isQueue) {
+    const temp = storage[0];
+    storage[0] = storage[1];
+    storage[1] = temp;
+  } else {
+    const last = storage.length - 1;
+    const secondLast = last - 1;
+    const temp = storage[last];
+    storage[last] = storage[secondLast];
+    storage[secondLast] = temp;
+  }
 }
 
 function moveCursor(
