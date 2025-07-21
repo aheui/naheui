@@ -81,7 +81,9 @@ export async function run(config: RunConfig): Promise<RunResult> {
       turnCursor(machineState.cursor, code.jung);
       const storageSize = getCurrentStorageSize(machineState);
       if (storageSize < code.parameterCount) reflectCursor(machineState.cursor);
-      else doOperation(machineState, code);
+      else if (arithmeticOperations.has(code.cho)) {
+        doArithmeticOperation(machineState, code);
+      } else doOperation(machineState, code);
     }
     if (!machineState.terminated) {
       moveCursor(machineState, codeSpace, tracepathFuel);
@@ -92,6 +94,41 @@ export async function run(config: RunConfig): Promise<RunResult> {
 
 function getCurrentStorageSize(machineState: MachineState): number {
   return machineState.storages[machineState.currentStorageIndex].length;
+}
+
+const arithmeticOperations = new Set(
+  [chos.ㄷ, chos.ㄸ, chos.ㅌ, chos.ㄴ, chos.ㄹ],
+);
+function doArithmeticOperation(
+  machineState: MachineState,
+  code: Code,
+): void {
+  const storageIndex = machineState.currentStorageIndex;
+  const storage = machineState.storages[storageIndex];
+  const rhs = pop(storage, storageIndex)!;
+  const lhs = pop(storage, storageIndex)!;
+  let result: number;
+  switch (code.cho) {
+    case chos.ㄷ:
+      result = (lhs + rhs) | 0;
+      break;
+    case chos.ㄸ:
+      result = (lhs - rhs) | 0;
+      break;
+    case chos.ㅌ:
+      result = (lhs * rhs) | 0;
+      break;
+    case chos.ㄴ:
+      result = (lhs / rhs) | 0;
+      break;
+    case chos.ㄹ:
+      result = (lhs % rhs) | 0;
+      break;
+    default:
+      result = 0;
+      break;
+  }
+  storage.push(result);
 }
 
 function doOperation(machineState: MachineState, code: Code): void {
