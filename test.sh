@@ -7,5 +7,4 @@ else
     git clone https://github.com/aheui/snippets
 fi
 cd snippets
-chmod 755 ../cli.js
-AHEUI="../cli.js" bash test.sh standard
+AHEUI="deno run -A ../src/cli.ts" bash test.sh standard
