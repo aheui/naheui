@@ -14,6 +14,9 @@ class InputParser {
     const text = await toText(Deno.stdin.readable);
     return new InputParser(text);
   }
+  static empty(): InputParser {
+    return new InputParser("");
+  }
   readChar(): string | undefined {
     if (this.pos >= this.buffer.length) return;
     const char = this.buffer.codePointAt(this.pos);
@@ -52,7 +55,9 @@ class InputParser {
 const sourceCode = await Deno.readTextFile(Deno.args[0]);
 const codeSpace = createCodeSpace(sourceCode);
 const machineState = createMachineState();
-const inputParser = await InputParser.fromStdin();
+const inputParser = Deno.stdin.isTerminal()
+  ? InputParser.empty()
+  : await InputParser.fromStdin();
 
 await run({
   codeSpace,
