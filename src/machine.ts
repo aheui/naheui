@@ -54,8 +54,8 @@ export interface RunConfig {
   needInterrupt: () => boolean;
   handleInterrupt: (machineState: MachineState) => void;
   checkBreakpoint: (machineState: MachineState) => boolean;
-  numInput: () => Promise<number>;
-  strInput: () => Promise<string>;
+  numInput: () => Promise<number | undefined>;
+  strInput: () => Promise<string | undefined>;
   numOutput: (num: number) => void;
   strOutput: (str: string) => void;
 }
@@ -90,15 +90,19 @@ export async function run(config: RunConfig): Promise<RunResult> {
         if (code.jong === jongs.ㅇ) {
           config.numOutput(value);
         } else if (code.jong === jongs.ㅎ) {
-          config.strOutput(String.fromCharCode(value));
+          config.strOutput(String.fromCodePoint(value));
         }
       } else if (code.cho === chos.ㅂ) {
         const storageIndex = machineState.currentStorageIndex;
         const storage = machineState.storages[storageIndex];
         if (code.jong === jongs.ㅇ) {
-          storage.push(await config.numInput());
+          const num = await config.numInput();
+          if (num == null) reflectCursor(machineState.cursor);
+          else storage.push(num);
         } else if (code.jong === jongs.ㅎ) {
-          storage.push((await config.strInput()).codePointAt(0) ?? 0);
+          const str = await config.strInput();
+          if (!str) reflectCursor(machineState.cursor);
+          else storage.push(str.codePointAt(0) ?? 0);
         } else storage.push(code.strokeCount);
       } else doOperation(machineState, code);
     }
