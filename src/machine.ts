@@ -20,9 +20,13 @@ export interface MachineState {
   cursor: Cursor;
   storages: number[][];
   currentStorageIndex: number;
-  terminated: boolean;
+  phase: MachinePhase;
   tracepath: Tracepath;
 }
+
+export type MachinePhase =
+  | { type: "running" }
+  | { type: "terminated"; exitCode: number };
 
 export interface Cursor {
   x: number;
@@ -41,7 +45,7 @@ export function createMachineState(): MachineState {
     cursor: { x: 0, y: 0, dx: 0, dy: 1 },
     storages: jongTable.map(() => []),
     currentStorageIndex: 0,
-    terminated: false,
+    phase: { type: "running" },
     tracepath: [],
   };
 }
@@ -71,7 +75,7 @@ export async function run(config: RunConfig): Promise<RunResult> {
     tracepathFuel,
     getMomentBitfields("down", "down", false, false),
   ]);
-  while (!machineState.terminated) {
+  while (machineState.phase.type !== "terminated") {
     if (config.machineFuel <= 0) {
       return { machineState, haltReason: "out-of-fuel" };
     } else --config.machineFuel;
@@ -81,7 +85,12 @@ export async function run(config: RunConfig): Promise<RunResult> {
       turnCursor(machineState.cursor, code.jung);
       const storageSize = getCurrentStorageSize(machineState);
       if (storageSize < code.parameterCount) reflectCursor(machineState.cursor);
-      else if (arithmeticOperations.has(code.cho)) {
+      else if (code.cho === chos.ㅎ) {
+        const storageIndex = machineState.currentStorageIndex;
+        const storage = machineState.storages[storageIndex];
+        const exitCode = pop(storage, storageIndex) ?? 0;
+        machineState.phase = { type: "terminated", exitCode };
+      } else if (arithmeticOperations.has(code.cho)) {
         doArithmeticOperation(machineState, code);
       } else if (code.cho === chos.ㅁ) {
         const storageIndex = machineState.currentStorageIndex;
@@ -106,7 +115,7 @@ export async function run(config: RunConfig): Promise<RunResult> {
         } else storage.push(code.strokeCount);
       } else doOperation(machineState, code);
     }
-    if (!machineState.terminated) {
+    if (machineState.phase.type === "running") {
       moveCursor(machineState, codeSpace, tracepathFuel);
     }
   }
@@ -134,10 +143,10 @@ function doArithmeticOperation(
       result = (lhs + rhs) | 0;
       break;
     case chos.ㄸ:
-      result = (lhs - rhs) | 0;
+      result = (lhs * rhs) | 0;
       break;
     case chos.ㅌ:
-      result = (lhs * rhs) | 0;
+      result = (lhs - rhs) | 0;
       break;
     case chos.ㄴ:
       result = (lhs / rhs) | 0;
@@ -154,9 +163,6 @@ function doArithmeticOperation(
 
 function doOperation(machineState: MachineState, code: Code): void {
   switch (code.cho) {
-    case chos.ㅎ:
-      machineState.terminated = true;
-      return;
     case chos.ㅃ: {
       const storageIndex = machineState.currentStorageIndex;
       const storage = machineState.storages[storageIndex];

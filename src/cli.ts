@@ -59,7 +59,7 @@ const inputParser = Deno.stdin.isTerminal()
   ? InputParser.empty()
   : await InputParser.fromStdin();
 
-await run({
+const result = await run({
   codeSpace,
   machineState,
   machineFuel: Infinity,
@@ -72,3 +72,9 @@ await run({
   numOutput: (num) => process.stdout.write(String(num)),
   strOutput: (str) => process.stdout.write(str),
 });
+
+if (result.machineState.phase.type === "terminated") {
+  Deno.exit(result.machineState.phase.exitCode);
+} else {
+  Deno.exit(-1);
+}
