@@ -277,9 +277,9 @@ function moveCursor(
 function turnCursor(cursor: Cursor, jung: number): void {
   const dx = dxTable[jung];
   const dy = dyTable[jung];
-  if (dx === reflect) reflectCursor(cursor);
+  if (dx === reflect) cursor.dx = (-cursor.dx) | 0;
   else if (dx !== ignore) cursor.dx = dx;
-  if (dy === reflect) reflectCursor(cursor);
+  if (dy === reflect) cursor.dy = (-cursor.dy) | 0;
   else if (dy !== ignore) cursor.dy = dy;
 }
 
