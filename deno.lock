@@ -7,12 +7,5 @@
     "@std/streams@1.0.10": {
       "integrity": "75c0b1431873cd0d8b3d679015220204d36d3c7420d93b60acfc379eb0dc30af"
     }
-  },
-  "workspace": {
-    "packageJson": {
-      "dependencies": [
-        "npm:minimist@^1.2.5"
-      ]
-    }
   }
 }

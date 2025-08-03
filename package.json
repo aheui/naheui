@@ -1,15 +1,7 @@
 {
   "name": "naheui",
-  "version": "0.4.2",
-  "description": "the aheui implementation for node.js",
-  "main": "aheui.js",
-  "preferGlobal": true,
-  "bin": {
-    "naheui": "cli.js"
-  },
-  "scripts": {
-    "test": "chmod 755 test.sh && ./test.sh"
-  },
+  "version": "1.0.0",
+  "description": "the aheui implementation",
   "repository": {
     "type": "git",
     "url": "git://github.com/aheui/naheui.git"
@@ -27,8 +19,5 @@
   "bugs": {
     "url": "https://github.com/aheui/naheui/issues"
   },
-  "homepage": "https://github.com/aheui/naheui",
-  "dependencies": {
-    "minimist": "^1.2.5"
-  }
+  "homepage": "https://github.com/aheui/naheui"
 }
